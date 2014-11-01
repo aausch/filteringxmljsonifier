@@ -12,6 +12,11 @@ script depends on lxml library - make sure it's available:
 * brew install libxslt
 * pip install -r requirements.txt 
 
+sample run
+===========
+* edit test/test_ClinVarFullRelease_2014_corrected.sh - uncomment the curl and gunzip commands
+* `cd test`
+* `./test_ClinVarFullRelease_2014_corrected.sh`
 
 usage:
 ======
