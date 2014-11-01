@@ -44,9 +44,10 @@ filter file format
   
   filter files contain csv data as follows:
 
-  [Source XPath], [destination property name], [type], <optional: force_array flag>
+  `[Source XPath], [destination property name], [type], <optional: force_array flag>`
   
-  ```[Source XPath]: 
+  ```
+  [Source XPath]: 
           an xpath formatted string, used to filter data in the source xml document. if the path is missing or produces no data, contents of the destination property are set to null.
 
   [destination property name]:
