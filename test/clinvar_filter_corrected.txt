@@ -1,0 +1,7 @@
+ReferenceClinVarAssertion/ClinVarAccession/@Acc | rcvaccession | unicode 
+ReferenceClinVarAssertion/ClinVarAccession/@Version | rcvaccession_version | int
+Title | title | unicode
+ReferenceClinVarAssertion/MeasureSet/Measure/Name/ElementValue | preferred_name | unicode
+ReferenceClinVarAssertion/MeasureSet/Measure/AttributeSet/Attribute[./@Type[contains(.,'HGVS')]] | hgvs | unicode | force_array
+ReferenceClinVarAssertion/MeasureSet/Measure/@Type | type | unicode
+ReferenceClinVarAssertion/ClinicalSignificance/Description | clinical_significance | unicode 
