@@ -1,5 +1,2 @@
 lxml==3.4.0
-requests==2.4.3
-solvebio==1.5.2
-wsgiref==0.1.2
 xmlutils==1.1
