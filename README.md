@@ -15,6 +15,7 @@ script depends on lxml library - make sure it's available:
 
 usage:
 ======
+```
 usage: xmljsonifier.py [-h] [--destination DESTINATION] root filter source
 
 Filters contents of large xml data sources and produces json-ified results
@@ -35,9 +36,10 @@ optional arguments:
                         
                         file name to store the generated json into; if ommited, will output to stdout
                         
-  
-  filter file format
-  ===================
+```
+
+filter file format
+===================
   (look at the test directory for examples)
   
   filter files contain csv data as follows:
