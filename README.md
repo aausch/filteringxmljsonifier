@@ -2,6 +2,10 @@ filteringxmljsonifier
 =====================
 
 python script for filtering a set of xpaths out of an xml document, and producing json data for them
+includes an option for attempting to do the work in parallel, using a mrjob job. 
+for usage examples, see the contents of the two shell scripts in the test directory.
+
+tested exclusively on osx
 
 installation/configuration
 ===========================
@@ -14,14 +18,23 @@ script depends on lxml library - make sure it's available:
 
 sample run
 ===========
+serial processing:
 * edit test/test_ClinVarFullRelease_2014_corrected.sh - uncomment the curl and gunzip commands
+* `cd test`
+* `./test_ClinVarFullRelease_2014_corrected.sh`
+
+parallel processing using mrjob:
+* edit test/test_ClinVarFullRelease_2014_split.sh - uncomment the curl and gunzip commands
 * `cd test`
 * `./test_ClinVarFullRelease_2014_corrected.sh`
 
 usage:
 ======
+bash> python xmljsonifier.py -h
 ```
-usage: xmljsonifier.py [-h] [--destination DESTINATION] root filter source
+usage: xmljsonifier.py [-h] [--destination DESTINATION] [--split SPLIT]
+                       [--split_root SPLIT_ROOT]
+                       root filter source
 
 Filters contents of large xml data sources and produces json-ified results
 
@@ -29,8 +42,8 @@ positional arguments:
   root                  
                         root XPath element name, used to interpret the filter file against
   filter                
-                        filter file name, containing column separated filter and map definitions like so: 
-                        [XPath], [target json attribute name], [type], [force array]
+                        filter file name, containing column separated filter and map definitions like so:
+                        [XPath], [target json attribute name], [string|int], [force array]
                         (see sample formatting file included with the source)
   source                
                         source xml formatted file
@@ -40,7 +53,13 @@ optional arguments:
   --destination DESTINATION
                         
                         file name to store the generated json into; if ommited, will output to stdout
+  --split SPLIT         
+                        split the xml file into valid xml files containing elements at root
+                        leaves the split documents in a directory named: [source][timestamp]
+                        performs the json conversion using a mrjob job, running on the split xml
+  --split_root SPLIT_ROOT
                         
+                        root node to split the xml on, if different from the root node to use when filtering 
 ```
 
 filter file format
@@ -62,3 +81,9 @@ filter file format
   <force_array>:
           an optional 4th column. if present, it indicates that the script should present the contents of the xpath as an array - an empty array if there is no data available. note that the script will always produce an array if the XPath resolves to more than one destination.
   ```
+TODO:
+=====
+* fix TODO's in the source
+* add error handling/make the system more robust
+* allow reuse of the split xml source instead of regenerating it on each run
+* clearer/more detailed documentation
