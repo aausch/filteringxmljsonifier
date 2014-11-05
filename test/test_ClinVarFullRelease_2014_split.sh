@@ -4,7 +4,7 @@
 #gunzip ClinVarFullRelease_2014-08.xml.gz
 
 STARTTIME=$(date +%s)
-python ../xmljsonifier.py "ReferenceClinVarAssertion" "`pwd`/clinvar_filter_corrected.txt" ClinVarFullRelease_2014-08.xml --destination="`pwd`/output.json" --split=true --split_root="ClinVarSet"
+python ../xmljsonifier.py "ClinVarSet" "`pwd`/clinvar_filter_corrected.txt" ClinVarFullRelease_2014-08.xml --destination="`pwd`/output.json" --split=true --split_root="ClinVarSet"
 ENDTIME=$(date +%s)
 echo "$(($ENDTIME - $STARTTIME)) seconds to complete jsonifying..."
 
