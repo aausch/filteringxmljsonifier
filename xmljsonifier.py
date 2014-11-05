@@ -1,92 +1,57 @@
 import sys
-import csv
 import json
+import os
 import io
 
-from argparse import ArgumentParser
-from argparse import RawTextHelpFormatter
-from copy import deepcopy
-from collections import namedtuple
 from lxml import etree
 
-Filter = namedtuple("Filter", "XPath jsonattr type force_array")
-
-parser = ArgumentParser(description='''Filters contents of large xml data sources and produces json-ified results''', formatter_class = RawTextHelpFormatter)
-
-parser.add_argument('root', help='''
-root XPath element name, used to interpret the filter file against
-''')
-parser.add_argument('filter', help='''
-filter file name, containing column separated filter and map definitions like so: 
-[XPath], [target json attribute name], [type], [force array]
-(see sample formatting file included with the source)
-''')
-parser.add_argument('source', help='''
-source xml formatted file
-''')
-parser.add_argument('--destination', required=False, nargs=1, help='''
-file name to store the generated json into; if ommited, will output to stdout
-''')
+from xmlSplit import xmlSplit
+from jsonserialize import json_serialize
+from argumentparser import parser
+from filterprocessor import load_filters
+from mrjobxmljsonifier import MrJobXMLJSONifier
 
 
-args = parser.parse_args()
+cargs = parser.parse_args()
+
+
+if (cargs.split is not None):
+    root_elem = cargs.root if cargs.split_root is None else cargs.split_root
+
+    splitfilesdirectory = xmlSplit(cargs.source, root_elem, 5000)
+    with open("splitfiles.tmp", "w") as split_file_list:
+      for path, subdirs, files in os.walk(splitfilesdirectory):
+        for filename in files:
+          f = os.path.join(path, filename)
+          split_file_list.write(os.path.join(os.getcwd(), str(f)) + os.linesep)
+          #'-r', 'local',
+    mr_jsonifier= MrJobXMLJSONifier(
+      args=[ '-r', 'local',
+             '--jobconf', 'settings.root=' + cargs.root,
+             '--jobconf', 'settings.filter=' + cargs.filter,
+             '--jobconf', 'settings.destination=' + cargs.destination[0],
+             'splitfiles.tmp'])
+    with mr_jsonifier.make_runner() as runner:
+      runner.run()
+    os.remove("splitfiles.tmp")
+    sys.exit(0)
+
 
 # read filter definitions
-filters = []
-with open(args.filter, 'rb') as csvfile:
-    filterreader = csv.reader(csvfile, delimiter='|')
-    for row in filterreader:
-        result = Filter(
-            XPath = row[0].strip(), 
-            jsonattr=row[1].strip(), 
-            type=row[2].strip(), 
-            force_array=len(row) > 3)
-        filters.append(result)
+filters = load_filters(cargs.filter)
 
 
-def fast_iter(context, func):
-    for event, elem in context:
-        func(elem)
-        elem.clear()
-    del context
+
 
 #attempts to guess at (and convert into) a builtin type based on a string
-def convert_type(value, type_):
-    import importlib
-    #assuming built in type
-    module = importlib.import_module('__builtin__')
-    cls = getattr(module, type_)
-    return cls(value)
-
-def json_serialize(elem, outstream):
-    result = {}
-    for f in filters:
-        xp = etree.XPath(f.XPath) 
-        children = xp(elem)
-        attr_val = []
-        for c in children:
-            raw_val =  c.text if (type(c) is etree._Element)  else c
-            attr_val.append (convert_type(raw_val, f.type))
-        if not f.force_array and len(children) < 2 and len(attr_val) > 0:
-            attr_val = attr_val[0]
-        elif len(attr_val) == 0:
-            attr_val = None
-        result[f.jsonattr] = attr_val
-    if result is not None and len(result) > 0:
-        outstream.write(unicode(json.dumps(result)))
-        outstream.write(u'\n') #easier on the eyes
 
 
-context = etree.iterparse(args.source, events=('end',), tag=args.root)
+context = etree.iterparse(cargs.source, events=('end',), tag=cargs.root)
 
-if args.destination is not None:
-    with io.open(args.destination[0], 'w') as file:
-        fast_iter(context, 
-            lambda elem:
-                json_serialize(elem, file))
+if cargs.destination is not None:
+    with io.open(cargs.destination[0], 'w') as file:
+      json_serialize(context,filters,file)
 else:
-    fast_iter(context, 
-       lambda elem:
-           json_serialize(elem, sys.stdout))
+  json_serialize(context, filters, sys.stdout)
 
 
