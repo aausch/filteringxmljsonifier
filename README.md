@@ -1,9 +1,10 @@
 filteringxmljsonifier
 =====================
-
-python script for filtering a set of xpaths out of an xml document, and producing json data for them
-includes an option for attempting to do the work in parallel, using a mrjob job. 
-for usage examples, see the contents of the two shell scripts in the test directory.
+* convert xml document to json
+* filter for specific xpaths
+* define a specifc target json schema 
+* optionally split the xml document into smaller chunks first, and process the chunks in parallel
+* very fast; very memory efficient; should be able to quickly handle gb to tb sized files
 
 tested exclusively on osx
 
