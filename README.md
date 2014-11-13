@@ -87,3 +87,5 @@ TODO:
 * add error handling/make the system more robust
 * allow reuse of the split xml source instead of regenerating it on each run
 * clearer/more detailed documentation
+* separate filtering xml and from writing out
+* experiment with extending the configuration and language - allow, for example, collection of several xpaths into one json list
