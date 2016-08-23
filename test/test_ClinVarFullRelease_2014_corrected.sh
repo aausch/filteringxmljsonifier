@@ -1,8 +1,8 @@
 #!/bin/bash -v
 
 STARTTIME=$(date +%s)
-curl "ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarFullRelease_2014-08.xml.gz" -o ClinVarFullRelease_2014-08.xml.gz
-gunzip ClinVarFullRelease_2014-08.xml.gz
+# curl "ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarFullRelease_2014-08.xml.gz" -o ClinVarFullRelease_2014-08.xml.gz
+# gunzip ClinVarFullRelease_2014-08.xml.gz
 
 python ../xmljsonifier.py "ClinVarSet" clinvar_filter_corrected.txt ClinVarFullRelease_2014-08.xml --destination=output.json
 ENDTIME=$(date +%s)
