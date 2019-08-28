@@ -1,3 +1,7 @@
+# 🚨🚨🚨 THIS REPO IS DEPRECATED, NOT MAINTAINED 🚨🚨🚨
+-
+
+
 filteringxmljsonifier
 =====================
 * convert xml document to json
